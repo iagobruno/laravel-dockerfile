@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -e
+
+role=${CONTAINER_ROLE:-app}
+env=${APP_ENV:-production}
+
+if [ ! -z "$WWWUSER" ]; then
+    usermod -u $WWWUSER sail
+fi
+
+if [ ! -d /.composer ]; then
+    mkdir /.composer
+fi
+
+chmod -R ugo+rw /.composer
+chmod -R 777 storage
+
+if [ $# -gt 0 ]; then
+    exec gosu $WWWUSER "$@"
+    exit
+fi
+
+echo "roleee = $role"
+
+if [ "$env" != "local" ]; then
+    echo "Caching configuration..."
+    (cd /var/www/html && php artisan config:cache && php artisan route:cache && php artisan view:cache)
+fi
+
+if [ "$role" = "app" ]; then
+    # Start the server
+    exec /usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80
+
+elif [ "$role" = "queue" ]; then
+    echo "Running the queue..."
+    php /var/www/html/artisan queue:work --verbose --tries=3 --timeout=90
+
+elif [ "$role" = "scheduler" ]; then
+    echo "Running the queue..."
+    php /var/www/html/artisan schedule:work --verbose --no-interaction
+
+else
+    echo "Could not match the container role \"$role\""
+    exit 1
+fi
