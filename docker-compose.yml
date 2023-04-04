@@ -39,34 +39,35 @@ services:
             - pgsql
         volumes:
             - .:/var/www/html
+        networks:
+            - sail
         environment:
             CONTAINER_ROLE: scheduler
             APP_ENV: '${APP_ENV}'
             CACHE_DRIVER: redis
-            SESSION_DRIVER: redis
             QUEUE_CONNECTION: redis
             REDIS_HOST: redis
-            BROADCAST_DRIVER: pusher
 
     queue:
         image: sail-8.2/app
-        container_name: laravel-queue
+        container_name: laravel-queues
         depends_on:
+            - pgsql
             - redis
         volumes:
             - .:/var/www/html
+        networks:
+            - sail
         environment:
             CONTAINER_ROLE: queue
             APP_ENV: '${APP_ENV}'
             CACHE_DRIVER: redis
-            SESSION_DRIVER: redis
             QUEUE_CONNECTION: redis
             REDIS_HOST: redis
-            BROADCAST_DRIVER: pusher
 
     pgsql:
         image: 'postgres:15'
-        container_name: postgres-database
+        container_name: postgres
         ports:
             - '${FORWARD_DB_PORT:-5432}:5432'
         environment:
