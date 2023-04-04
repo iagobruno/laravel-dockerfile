@@ -1,0 +1,13 @@
+@keyframes highlight-fade {
+  0% {
+      background: yellow;
+  }
+
+  100% {
+      background: none;
+  }
+}
+
+.highlight {
+  animation: highlight-fade 2s ease-in 1;
+}
