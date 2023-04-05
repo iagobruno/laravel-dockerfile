@@ -50,7 +50,7 @@ services:
 
     queue:
         image: sail-8.2/app
-        container_name: laravel-queues
+        container_name: laravel-horizon
         depends_on:
             - pgsql
             - redis

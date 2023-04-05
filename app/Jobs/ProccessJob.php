@@ -21,7 +21,7 @@ class ProccessJob implements ShouldQueue
      */
     public function __construct()
     {
-        //
+        $this->onQueue('processing');
     }
 
     /**

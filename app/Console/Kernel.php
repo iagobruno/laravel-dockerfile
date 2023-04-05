@@ -15,6 +15,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->job(new ProccessJob)->everyMinute();
+
+        $schedule->command('horizon:snapshot')->everyFiveMinutes();
     }
 
     /**
