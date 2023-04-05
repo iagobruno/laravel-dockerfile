@@ -30,5 +30,6 @@ class Log extends Model
      */
     protected $dispatchesEvents = [
         'created' => \App\Events\LogCreated::class,
+        'updated' => \App\Events\LogUpdated::class,
     ];
 }

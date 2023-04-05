@@ -32,9 +32,15 @@ class ProcessJob implements ShouldQueue
      */
     public function handle()
     {
-        $result = Process::run("echo 'hello'");
-        $output = $result->output();
+        $log = Log::create([
+            'message' => '⏳ Processing...'
+        ]);
 
-        Log::factory()->create();
+        $result = Process::run("sleep 1 && php artisan inspire");
+        $emoji = $result->successful() ? '✅' : '❌';
+        $output = $result->successful() ? $result->output() : 'Failed to process the command' ?? $result->errorOutput();
+        $message = $emoji . ' ' . $output;
+
+        $log->update(compact('message'));
     }
 }
