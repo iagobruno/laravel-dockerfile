@@ -9,8 +9,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Log;
+use Illuminate\Support\Facades\Process;
 
-class ProccessJob implements ShouldQueue
+class ProcessJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -31,7 +32,8 @@ class ProccessJob implements ShouldQueue
      */
     public function handle()
     {
-        // ...
+        $result = Process::run("echo 'hello'");
+        $output = $result->output();
 
         Log::factory()->create();
     }

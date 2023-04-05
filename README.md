@@ -10,9 +10,9 @@ Inspirado neste artigo https://laravel-news.com/laravel-scheduler-queue-docker.
 
 ## How it works
 
-1. O scheduler do Laravel adiciona um novo `ProccessJob` na fila a cada minuto. ([See](/app/Console/Kernel.php#L17))
+1. O scheduler do Laravel adiciona um novo `ProcessJob` na fila a cada minuto. ([See](/app/Console/Kernel.php#L17))
 2. O Horizon processa a fila de jobs.
-3. O `ProccessJob` cria um Log no banco de dados. ([See](/app/Jobs/ProccessJob.php#L36))
+3. O `ProcessJob` cria um Log no banco de dados. ([See](/app/Jobs/ProcessJob.php#L36))
 4. Quando um Log é criado o Eloquent dispara o evento `LogCreated` via websocket. ([See](/app/Models/Log.php#L33))
 5. A página inicial recebe um evento `LogCreated` via websocket e atualiza a página. ([See](/resources/js/app.js#L6))
 
