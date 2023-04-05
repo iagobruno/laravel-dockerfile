@@ -49,7 +49,7 @@ services:
             REDIS_HOST: redis
 
     queues:
-        container_name: laravel-horizon
+        container_name: laravel-queues
         image: sail-8.2/app
         depends_on:
             - pgsql
