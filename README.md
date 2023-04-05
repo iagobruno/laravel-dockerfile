@@ -49,11 +49,3 @@ sail yarn run dev
 ```
 
 Now you can access the project at http://localhost in the browser.
-
-## Production note
-
-Em produção, é necessário iniciar somente o servidor, o scheduler e o horizon.
-
-```
-sail up laravel.test scheduler queues
-```
