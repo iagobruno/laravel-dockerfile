@@ -2,13 +2,13 @@ version: '3'
 
 services:
     laravel.test:
+        container_name: laravel-app
         build:
             context: ./docker
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
         image: sail-8.2/app
-        container_name: laravel-app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
@@ -27,13 +27,13 @@ services:
             - sail
         depends_on:
             - scheduler
-            - queue
+            - queues
             - pgsql
             - redis
 
     scheduler:
-        image: sail-8.2/app
         container_name: laravel-scheduler
+        image: sail-8.2/app
         depends_on:
             - redis
             - pgsql
@@ -48,9 +48,9 @@ services:
             QUEUE_CONNECTION: redis
             REDIS_HOST: redis
 
-    queue:
-        image: sail-8.2/app
+    queues:
         container_name: laravel-horizon
+        image: sail-8.2/app
         depends_on:
             - pgsql
             - redis
@@ -66,8 +66,8 @@ services:
             REDIS_HOST: redis
 
     pgsql:
-        image: 'postgres:15'
         container_name: postgres
+        image: 'postgres:15'
         ports:
             - '${FORWARD_DB_PORT:-5432}:5432'
         environment:
@@ -93,8 +93,8 @@ services:
             timeout: 5s
 
     redis:
-        image: 'redis:alpine'
         container_name: redis
+        image: 'redis:alpine'
         ports:
             - '${FORWARD_REDIS_PORT:-6379}:6379'
         volumes:
