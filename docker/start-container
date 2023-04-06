@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-role=${CONTAINER_ROLE:-app}
 env=${APP_ENV:-production}
 
 if [ ! -z "$WWWUSER" ]; then
@@ -13,33 +12,13 @@ fi
 
 chmod -R ugo+rw /.composer
 
-if [ $# -gt 0 ]; then
-    exec gosu $WWWUSER "$@"
-    exit
-fi
-
 if [ "$env" != "local" ]; then
     echo "Caching configuration..."
     (cd /var/www/html && php artisan config:cache && php artisan route:cache && php artisan view:cache)
 fi
 
-echo "Starting the $role..."
-
-function start_app {
-    exec /usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80
-}
-
-function start_queues {
-    php /var/www/html/artisan queue:listen --tries=3 --queue=processing,websocket,default --verbose
-    # php /var/www/html/artisan horizon
-}
-
-function start_scheduler {
-    php /var/www/html/artisan schedule:work --verbose --no-interaction
-}
-
-if [ "$role" = "app" ]; then start_app
-elif [ "$role" = "queue" ]; then start_queues
-elif [ "$role" = "scheduler" ]; then start_scheduler
-else echo "Could not match the container role \"$role\""
+if [ $# -gt 0 ]; then
+    exec gosu $WWWUSER "$@"
+else
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 fi

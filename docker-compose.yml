@@ -15,7 +15,6 @@ services:
             - '${APP_PORT:-80}:80'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
         environment:
-            CONTAINER_ROLE: app
             APP_ENV: '${APP_ENV}'
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
@@ -26,44 +25,8 @@ services:
         networks:
             - sail
         depends_on:
-            - scheduler
-            - queues
             - pgsql
             - redis
-
-    scheduler:
-        container_name: laravel-scheduler
-        image: sail-8.2/app
-        depends_on:
-            - redis
-            - pgsql
-        volumes:
-            - .:/var/www/html
-        networks:
-            - sail
-        environment:
-            CONTAINER_ROLE: scheduler
-            APP_ENV: '${APP_ENV}'
-            CACHE_DRIVER: redis
-            QUEUE_CONNECTION: redis
-            REDIS_HOST: redis
-
-    queues:
-        container_name: laravel-queues
-        image: sail-8.2/app
-        depends_on:
-            - pgsql
-            - redis
-        volumes:
-            - .:/var/www/html
-        networks:
-            - sail
-        environment:
-            CONTAINER_ROLE: queue
-            APP_ENV: '${APP_ENV}'
-            CACHE_DRIVER: redis
-            QUEUE_CONNECTION: redis
-            REDIS_HOST: redis
 
     pgsql:
         container_name: postgres

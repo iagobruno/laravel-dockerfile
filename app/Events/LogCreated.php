@@ -28,11 +28,6 @@ class LogCreated implements ShouldBroadcastNow
     }
 
     /**
-     * The name of the queue on which to place the broadcasting job.
-     */
-    public $queue = 'websocket';
-
-    /**
      * Get the channels the event should broadcast on.
      */
     public function broadcastOn()

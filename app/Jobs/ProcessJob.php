@@ -22,7 +22,7 @@ class ProcessJob implements ShouldQueue
      */
     public function __construct()
     {
-        $this->onQueue('processing');
+        //
     }
 
     /**
@@ -36,7 +36,7 @@ class ProcessJob implements ShouldQueue
             'message' => '⏳ Processing...'
         ]);
 
-        $result = Process::run("sleep 1 && php artisan inspire");
+        $result = Process::run("php artisan inspire");
         $emoji = $result->successful() ? '✅' : '❌';
         $output = $result->successful() ? $result->output() : 'Failed to process the command' ?? $result->errorOutput();
         $message = $emoji . ' ' . $output;

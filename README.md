@@ -1,12 +1,4 @@
-Um projeto de exemplo de como usar o Docker para criar vários containers para:
-
-- Servidor web
-- Agendamento de ações
-- Processamento de filas
-- Bando de dados
-- Redis
-
-Inspirado neste artigo https://laravel-news.com/laravel-scheduler-queue-docker.
+Um projeto de exemplo de como usar queues e o scheduler junto com sail.
 
 ## How it works
 
@@ -14,7 +6,7 @@ Inspirado neste artigo https://laravel-news.com/laravel-scheduler-queue-docker.
 2. O comando queue:listen processa a fila de jobs.
 3. O `ProcessJob` cria um Log no banco de dados. ([See](/app/Jobs/ProcessJob.php#L36))
 4. Quando um Log é criado o Eloquent dispara o evento `LogCreated` via websocket. ([See](/app/Models/Log.php#L33))
-5. A página inicial recebe um evento `LogCreated` via websocket e atualiza a página. ([See](/resources/js/app.js#L6))
+5. A página inicial recebe o evento `LogCreated` via websocket e atualiza a página. ([See](/resources/js/app.js#L6))
 
 ## Run Locally
 
@@ -29,7 +21,7 @@ php artisan key:generate
 Then start Docker containers using [Sail](https://laravel.com/docs/10.x/sail):
 
 ```bash
-sail up -d
+sail up -d --build
 ```
 
 And run the migrations:
