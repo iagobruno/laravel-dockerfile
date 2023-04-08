@@ -1,4 +1,8 @@
-Um projeto de exemplo de como usar queues e o scheduler junto com sail.
+- [ ] Configurar o opcache do php
+- [ ] Ativar o opcache somente em produção
+- [ ] Continuar escrevendo a sessão Production no README
+
+Um projeto de exemplo de como usar queues e o scheduler do Laravel dentro do Docker e de quebra como usar o mesmo Dockerfile em desenvolvimento e em produção.
 
 ## How it works
 
@@ -21,14 +25,15 @@ php artisan key:generate
 Then start Docker containers using [Sail](https://laravel.com/docs/10.x/sail):
 
 ```bash
-sail up -d --build
+docker compose up -d
 ```
 
 And run the migrations:
 
 ```bash
-sail artisan migrate
-sail artisan db:seed # Optional
+docker exec -it laravel-app bash
+php artisan migrate
+php artisan db:seed # Optional
 ```
 
 ### Front-end assets
@@ -36,8 +41,14 @@ sail artisan db:seed # Optional
 Open another terminal tab and run the command below to compile front-end assets:
 
 ```bash
-sail yarn install
-sail yarn run dev
+yarn install
+yarn run dev
 ```
 
 Now you can access the project at http://localhost in the browser.
+
+### Production
+
+```bash
+docker build .
+```

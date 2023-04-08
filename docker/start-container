@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 
-env=${APP_ENV:-production}
+ENV=${APP_ENV:-production}
+echo "APP_ENV = [$ENV]"
 
-if [ ! -z "$WWWUSER" ]; then
-    usermod -u $WWWUSER sail
+if [ ! -f "vendor/autoload.php" ]; then
+    composer install --optimize-autoloader --no-progress --no-interaction
 fi
 
-if [ ! -d /.composer ]; then
-    mkdir /.composer
+if [ ! -f ".env" ]; then
+    echo "Creating env file..."
+    cp .env.example .env
 fi
 
-chmod -R ugo+rw /.composer
+if [ "$ENV" = "production" ]; then
+    echo "Caching Laravel configs and assets..."
+    (php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan event:cache)
 
-if [ "$env" != "local" ]; then
-    echo "Caching configuration..."
-    (cd /var/www/html && php artisan config:cache && php artisan route:cache && php artisan view:cache)
+    yarn run build
+
+    php artisan migrate --force
 fi
 
-if [ $# -gt 0 ]; then
-    exec gosu $WWWUSER "$@"
-else
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
-fi
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
