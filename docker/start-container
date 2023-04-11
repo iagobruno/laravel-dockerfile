@@ -7,10 +7,6 @@ if [ ! -f "vendor/autoload.php" ]; then
     composer install --optimize-autoloader --no-progress --no-interaction
 fi
 
-if [ ! -f "node_modules" ]; then
-    yarn install
-fi
-
 if [ ! -f ".env" ]; then
     echo "Creating env file..."
     cp .env.example .env
