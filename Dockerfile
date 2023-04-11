@@ -1,25 +1,28 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
 ARG APP_DIR=/var/www/html
+ARG TZ=UTC
 
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install OS deps
-RUN apt-get update -y && apt-get install -y --no-install-recommends \
-  apt-utils \
-  nginx \
+RUN apt-get update -y && apt-get install -y --no-install-recommends apt-utils \
   supervisor \
+  nginx \
+  cron \
   git \
-  zlib1g-dev \
-  libzip-dev \
   zip \
   unzip \
+  zlib1g-dev \
+  libzip-dev \
   libpng-dev \
+  libjpeg-dev \
   libpq-dev \
   libxml2-dev
 
 # Install php extensions
 RUN docker-php-ext-install \
+  dom \
   pdo \
   pdo_mysql \
   pdo_pgsql \
@@ -35,34 +38,37 @@ RUN docker-php-ext-install \
   pcntl \
   gd \
   fileinfo \
-  opcache
+  opcache \
+  && pecl install redis swoole
 
-RUN pecl install redis-5.3.7 \
-    && docker-php-ext-enable redis
+RUN docker-php-ext-enable swoole redis
+
+# Install composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Install NodeJS
 RUN curl -sLS https://deb.nodesource.com/setup_18.x | bash - \
   && curl https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
   && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-  && apt-get update && apt-get install -y nodejs yarn
+  && apt-get update && apt-get install -y nodejs yarn \
+  && yarn add chokidar
 
+# Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #########################################################################
 
-ARG TZ=UTC
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 COPY . .
 
 RUN chmod -R ugo+rw storage/logs bootstrap/cache
-RUN rm -rf /etc/nginx/sites-enabled/* && rm -rf /etc/nginx/sites-available/*
-COPY ./docker/nginx.conf /etc/nginx/sites-enabled/default.conf
 COPY ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY ./docker/php.ini "$PHP_INI_DIR/extra-php.ini"
-COPY ./docker/php-fpm.conf /etc/php8/php-fpm.d/www.conf
+COPY ./docker/php.ini "$PHP_INI_DIR/conf.d/extra-php.ini"
+COPY ./docker/opcache.ini "$PHP_INI_DIR/conf.d/opcache.ini"
 COPY ./docker/start-container /usr/local/bin/start-container
-RUN chmod +x /usr/local/bin/start-container
+COPY ./docker/start-server /usr/local/bin/start-server
+RUN chmod +x /usr/local/bin/start-container /usr/local/bin/start-server
 
 EXPOSE 8000
 ENTRYPOINT ["start-container"]
+
+HEALTHCHECK --start-period=5s --interval=2s --timeout=5s --retries=5 CMD php artisan octane:status || exit 1
