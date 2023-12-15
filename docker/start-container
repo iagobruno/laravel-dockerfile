@@ -16,7 +16,7 @@ if [ "$ENV" = "production" ]; then
     echo "Caching Laravel configs and assets..."
     (php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan event:cache)
 
-    yarn run build
+    (yarn install && yarn run build)
 
     php artisan migrate --force
 fi
