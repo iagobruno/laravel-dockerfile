@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 ENV=${APP_ENV:-production}
-echo "APP_ENV = [$ENV]"
+echo "Starting container in [$ENV] mode"
 
 if [ ! -f "vendor/autoload.php" ]; then
     composer install --optimize-autoloader --no-progress --no-interaction

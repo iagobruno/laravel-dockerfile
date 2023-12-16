@@ -1,14 +1,17 @@
-FROM php:8.2-cli
+FROM php:8.2-fpm
 
 ARG APP_DIR=/var/www/html
 ARG TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+WORKDIR /var/www/html
+
 # Install OS deps
 RUN apt-get update -y && apt-get install -y --no-install-recommends apt-utils \
   supervisor \
   nginx \
+  curl \
   cron \
   git \
   zip \
@@ -38,10 +41,9 @@ RUN docker-php-ext-install \
   pcntl \
   gd \
   fileinfo \
-  opcache \
-  && pecl install redis swoole
+  && pecl install redis
 
-RUN docker-php-ext-enable swoole redis
+RUN docker-php-ext-enable redis
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
@@ -59,15 +61,13 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY . .
 
+COPY docker/start.sh /usr/local/bin/start
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
 RUN chmod -R ugo+rw storage/logs bootstrap/cache
-COPY ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY ./docker/php.ini "$PHP_INI_DIR/conf.d/extra-php.ini"
-COPY ./docker/opcache.ini "$PHP_INI_DIR/conf.d/opcache.ini"
-COPY ./docker/start-container /usr/local/bin/start-container
-COPY ./docker/start-server /usr/local/bin/start-server
-RUN chmod +x /usr/local/bin/start-container /usr/local/bin/start-server
+RUN chmod a+x /usr/local/bin/start
 
-EXPOSE 8000
-ENTRYPOINT ["start-container"]
+EXPOSE 80
 
-HEALTHCHECK --start-period=5s --interval=2s --timeout=5s --retries=5 CMD php artisan octane:status || exit 1
+CMD /usr/local/bin/start
