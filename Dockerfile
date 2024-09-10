@@ -50,4 +50,6 @@ RUN echo 'alias artisan="php artisan"' >> ~/.bashrc && \
   echo 'alias art="php artisan"' >> ~/.bashrc && \
   echo 'alias tinker="php artisan tinker"' >> ~/.bashrc
 
+EXPOSE 8080
+
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

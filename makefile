@@ -11,4 +11,4 @@ build:
 	docker build --build-arg APP_ENV=production -t $(IMAGE_NAME) -f Dockerfile .
 
 start-production:
-	docker run --rm -p 80:8000 --name $(CONTAINER_NAME) $(IMAGE_NAME)
+	docker run --rm -p 80:8080 --name $(CONTAINER_NAME) $(IMAGE_NAME)
