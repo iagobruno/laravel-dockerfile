@@ -1,30 +1,23 @@
-version: '3'
-
 services:
     app:
         container_name: laravel-app
         build:
             context: .
             dockerfile: Dockerfile
-            # args:
-            #     WWWUSER: "${WWWUSER}"
-            #     WWWGROUP: "${WWWGROUP}"
-        image: laravel/php-fpm-nginx:8.2
+        image: laravel-franken-app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
-            - '${APP_PORT:-80}:80'
-            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
-            - "443:443"
+            - '80:8000'
+            - '443:443'
         environment:
             APP_ENV: '${APP_ENV}'
         volumes:
-            - '.:/var/www/html'
+            - .:/app
         networks:
             - laravel
         depends_on:
             - pgsql
-            - redis
 
     pgsql:
         container_name: postgres
@@ -37,8 +30,7 @@ services:
             POSTGRES_USER: '${DB_USERNAME}'
             POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
         volumes:
-            - 'sail-pgsql:/var/lib/postgresql/data'
-            - './vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
+            - 'laravel-pgsql:/var/lib/postgresql/data'
         networks:
             - laravel
         healthcheck:
@@ -53,29 +45,10 @@ services:
             retries: 3
             timeout: 5s
 
-    redis:
-        container_name: redis
-        image: 'redis:alpine'
-        ports:
-            - '${FORWARD_REDIS_PORT:-6379}:6379'
-        volumes:
-            - 'sail-redis:/data'
-        networks:
-            - laravel
-        healthcheck:
-            test:
-                - CMD
-                - redis-cli
-                - ping
-            retries: 3
-            timeout: 5s
-
 networks:
     laravel:
         driver: bridge
 
 volumes:
-    sail-pgsql:
-        driver: local
-    sail-redis:
+    laravel-pgsql:
         driver: local

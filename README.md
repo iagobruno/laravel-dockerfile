@@ -1,12 +1,8 @@
-- [ ] Configurar o opcache do php
-- [ ] Ativar o opcache somente em produção
-- [ ] Continuar escrevendo a sessão Production no README
-
 Um projeto de exemplo de como usar queues e o scheduler do Laravel dentro do Docker e de quebra como usar o mesmo Dockerfile em desenvolvimento e em produção.
 
 ## How it works
 
-1. O scheduler do Laravel adiciona um novo `ProcessJob` na fila a cada minuto. ([See](/app/Console/Kernel.php#L17))
+1. O scheduler do Laravel adiciona um novo `ProcessJob` na fila a cada minuto. ([See](/routes/console.php))
 2. O comando queue:listen processa a fila de jobs.
 3. O `ProcessJob` cria um Log no banco de dados. ([See](/app/Jobs/ProcessJob.php#L36))
 4. Quando um Log é criado o Eloquent dispara o evento `LogCreated` via websocket. ([See](/app/Models/Log.php#L33))
@@ -22,7 +18,7 @@ cp .env.example .env # And edit the values
 php artisan key:generate
 ```
 
-Then start Docker containers using [Sail](https://laravel.com/docs/10.x/sail):
+Then start Docker containers using:
 
 ```bash
 docker compose up -d

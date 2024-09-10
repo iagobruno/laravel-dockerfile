@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "command": "docker compose up --build",
+      "label": "Start Docker containers",
+      "presentation": {
+        "group": "startup-commands",
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "type": "shell",
+      "command": "yarn run dev",
+      "label": "yarn run dev",
+      "presentation": {
+        "group": "startup-commands",
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+  ]
+}

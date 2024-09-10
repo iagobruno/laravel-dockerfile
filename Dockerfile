@@ -1,21 +1,15 @@
-FROM php:8.2-fpm
+FROM dunglas/frankenphp:php8.3-bookworm
 
-ARG APP_DIR=/var/www/html
+ARG APP_ENV=local
 ARG TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-WORKDIR /var/www/html
-
-# Install OS deps
 RUN apt-get update -y && apt-get install -y --no-install-recommends apt-utils \
   supervisor \
-  nginx \
-  curl \
   cron \
+  curl \
   git \
-  zip \
-  unzip \
   zlib1g-dev \
   libzip-dev \
   libpng-dev \
@@ -23,24 +17,10 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends apt-utils \
   libpq-dev \
   libxml2-dev
 
-# Install php extensions
-RUN docker-php-ext-install \
-  dom \
-  pdo \
-  pdo_mysql \
-  pdo_pgsql \
-  mysqli \
-  pgsql \
-  session \
-  xml \
-  zip \
-  iconv \
-  simplexml \
-  bcmath \
-  intl \
+RUN install-php-extensions \
   pcntl \
-  gd \
-  fileinfo \
+  pdo_pgsql \
+  pgsql \
   && pecl install redis
 
 RUN docker-php-ext-enable redis
@@ -49,25 +29,25 @@ RUN docker-php-ext-enable redis
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Install NodeJS
-RUN curl -sLS https://deb.nodesource.com/setup_18.x | bash - \
-  && curl https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-  && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-  && apt-get update && apt-get install -y nodejs yarn
+COPY --from=node:20-slim /usr/local/bin /usr/local/bin
+# Install NPM
+COPY --from=node:20-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
+# Install Yarn
+RUN npm install -g --force yarn
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+COPY . /app
 
-#########################################################################
+RUN if [ "$APP_ENV" = "production" ]; then \
+    composer install --optimize-autoloader --no-progress --no-interaction && \
+    yarn install --non-interactive --no-progress && \
+    if [ ! -f .env ]; then cp .env.example .env; fi && \
+    yarn run build && \
+    (php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan event:cache) \
+  fi
 
-COPY . .
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN echo 'alias artisan="php artisan"' >> ~/.bashrc && \
+  echo 'alias art="php artisan"' >> ~/.bashrc && \
+  echo 'alias tinker="php artisan tinker"' >> ~/.bashrc
 
-COPY docker/start.sh /usr/local/bin/start
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
-RUN chmod -R ugo+rw storage/logs bootstrap/cache
-RUN chmod a+x /usr/local/bin/start
-
-EXPOSE 80
-
-CMD /usr/local/bin/start
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
