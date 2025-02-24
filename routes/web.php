@@ -9,3 +9,7 @@ Route::get('/', function () {
 Route::get('/test', function () {
     return env('APP_NAME');
 });
+
+Route::get('/inspire', function () {
+    return Process::run("php artisan inspire")->output();
+});
