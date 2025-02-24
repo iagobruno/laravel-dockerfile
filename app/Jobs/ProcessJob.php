@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Log;
+use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Process;
 
 class ProcessJob implements ShouldQueue
@@ -36,10 +37,12 @@ class ProcessJob implements ShouldQueue
             'message' => '⏳ Processing...'
         ]);
 
-        $result = Process::run("php artisan inspire");
-        $emoji = $result->successful() ? '✅' : '❌';
-        $output = $result->successful() ? $result->output() : 'Failed to process the command' ?? $result->errorOutput();
-        $message = $emoji . ' ' . $output;
+        // $result = Process::run("php artisan inspire");
+        // $emoji = $result->successful() ? '✅' : '❌';
+        // $output = $result->successful() ? $result->output() : 'Failed to process the command' ?? $result->errorOutput();
+        // $message = $emoji . ' ' . $output;
+
+        $message = '✅ ' . Inspiring::quote();
 
         $log->update(compact('message'));
     }
