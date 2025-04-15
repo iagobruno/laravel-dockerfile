@@ -48,3 +48,16 @@ Now you can access the project at http://localhost in the browser.
 ```bash
 docker build .
 ```
+
+### To auto deploy
+
+If you are using a VPS with Docker, run the commands below to update the production container:
+
+```bash
+git pull origin main
+make ENV=production build
+php artisan migrate --force
+make ENV=production start-prod
+```
+
+> Don't forget to configure the .env file in the root outside the container.

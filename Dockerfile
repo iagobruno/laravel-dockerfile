@@ -1,5 +1,6 @@
 FROM dunglas/frankenphp:php8.3-bookworm
 
+ARG PORT
 ARG APP_ENV=local
 ARG TZ=UTC
 
@@ -20,10 +21,10 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends apt-utils \
 RUN install-php-extensions \
   pcntl \
   pdo_pgsql \
-  pgsql \
-  && pecl install redis
+  pgsql
+#   && pecl install redis
 
-RUN docker-php-ext-enable redis
+# RUN docker-php-ext-enable redis
 
 # Install composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
@@ -33,17 +34,19 @@ COPY --from=node:20-slim /usr/local/bin /usr/local/bin
 # Install NPM
 COPY --from=node:20-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
 # Install Yarn
-RUN npm install -g --force yarn
+RUN npm install -g --force yarn pnpm@latest-10
 
 COPY . /app
+
 
 RUN if [ "$APP_ENV" = "production" ]; then \
     composer install --optimize-autoloader --no-progress --no-interaction && \
     yarn install --non-interactive --no-progress && \
-    if [ ! -f .env ]; then cp .env.example .env; fi && \
     yarn run build && \
-    (php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan event:cache) \
-  fi
+    # RUN MIGRATIONS
+    php artisan migrate --force \
+  ;fi
+
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN echo 'alias artisan="php artisan"' >> ~/.bashrc && \
