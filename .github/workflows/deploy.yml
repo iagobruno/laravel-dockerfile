@@ -23,6 +23,12 @@ jobs:
         script: |
           cd laravel-dockerfile
           git pull origin main
+
           make ENV=production PORT=8080 build
+
+          echo "RUNNING DATABASE MIGRATIONS..."
+          echo ""
           php artisan migrate --force
+          echo ""
+
           make ENV=production PORT=8080 start
