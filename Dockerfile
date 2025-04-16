@@ -43,7 +43,8 @@ COPY . /app
 RUN if [ "$ENV" = "production" ]; then \
     composer install --optimize-autoloader --no-progress --no-interaction && \
     yarn install --non-interactive --no-progress && \
-    yarn run build \
+    yarn run build && \
+    php artisan migrate --force \
   ;fi
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
