@@ -40,15 +40,11 @@ RUN install-php-extensions \
 
 COPY . /app
 
-
 RUN if [ "$ENV" = "production" ]; then \
     composer install --optimize-autoloader --no-progress --no-interaction && \
     yarn install --non-interactive --no-progress && \
-    yarn run build && \
-    # RUN MIGRATIONS
-    php artisan migrate --force \
+    yarn run build
   ;fi
-
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN echo 'alias artisan="php artisan"' >> ~/.bashrc && \
