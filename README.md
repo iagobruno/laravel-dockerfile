@@ -43,13 +43,7 @@ yarn run dev
 
 Now you can access the project at http://localhost in the browser.
 
-### Production
-
-```bash
-docker build .
-```
-
-### To auto deploy
+### How to deploy to production
 
 If you are using a VPS with Docker, run the commands below to update the production container:
 
@@ -57,7 +51,9 @@ If you are using a VPS with Docker, run the commands below to update the product
 git pull origin main
 make ENV=production build
 php artisan migrate --force
-make ENV=production start-prod
+make ENV=production start
 ```
 
 > Don't forget to configure the .env file in the root outside the container.
+
+> You can customize the PORT with an environment variable too.

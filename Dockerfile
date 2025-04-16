@@ -1,7 +1,7 @@
 FROM dunglas/frankenphp:php8.3-bookworm
 
 ARG PORT
-ARG APP_ENV=local
+ARG ENV=local
 ARG TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -39,7 +39,7 @@ RUN npm install -g --force yarn pnpm@latest-10
 COPY . /app
 
 
-RUN if [ "$APP_ENV" = "production" ]; then \
+RUN if [ "$ENV" = "production" ]; then \
     composer install --optimize-autoloader --no-progress --no-interaction && \
     yarn install --non-interactive --no-progress && \
     yarn run build && \

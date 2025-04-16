@@ -4,14 +4,15 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        image: laravel-franken-app
+        image: laravel-app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
             - '80:8080'
             - '443:443'
         environment:
-            APP_ENV: '${APP_ENV}'
+            ENV: '${ENV}'
+            PORT: '${PORT:-8080}'
         volumes:
             - .:/app
         networks:

@@ -1,17 +1,30 @@
 IMAGE_NAME ?= laravel-app
-CONTAINER_NAME ?= laravel-app-prod
+CONTAINER_NAME ?= laravel-app
 ENV ?= local
 PORT ?= 8080
 
-start:
-	docker compose up --build -d
+dev:
+	docker compose up --build -d && \
+	yarn run dev
 
 bash:
 	docker exec -it $(CONTAINER_NAME) bash
 
 build:
-	docker build --build-arg APP_ENV=$(ENV) --build-arg PORT=$(PORT) -t $(IMAGE_NAME) -f Dockerfile .
+	docker build \
+		--build-arg ENV=$(ENV) \
+		--build-arg PORT=$(PORT) \
+		-t $(IMAGE_NAME) \
+		-f Dockerfile .
 
-start-prod:
+start:
 	docker rm -f $(CONTAINER_NAME) || true
-	docker run -d -p $(PORT):$(PORT) -e PORT=$(PORT) -e APP_ENV=$(ENV) --name $(CONTAINER_NAME) $(IMAGE_NAME)
+	docker run -d \
+		--network host \
+		-e PORT=$(PORT) \
+		-e ENV=$(ENV) \
+		--name $(CONTAINER_NAME) \
+		$(IMAGE_NAME)
+# Configurar para usar mais recursos da VPS conforme necessário e disponibilidade
+# --memory="4g" \
+# --cpus="1" \

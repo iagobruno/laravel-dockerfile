@@ -17,7 +17,7 @@
     <p>⚡ Página atualizada em tempo real. <span id="estimate"></span></p>
 
     <h1>Logs:</h1>
-    <ol>
+    <ol reversed>
         @foreach (\App\Models\Log::latest()->get() as $log)
             <x-log :$log />
         @endforeach
