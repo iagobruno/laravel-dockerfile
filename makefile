@@ -20,9 +20,11 @@ build:
 start:
 	docker rm -f $(CONTAINER_NAME) || true
 	docker run -d \
-		--network host \
 		-e PORT=$(PORT) \
 		-e ENV=$(ENV) \
+        -p $(PORT):$(PORT) \
+		-p 80:$(PORT) \
+		-p 443:433 \
 		--name $(CONTAINER_NAME) \
 		$(IMAGE_NAME)
 # Configurar para usar mais recursos da VPS conforme necessário e disponibilidade
