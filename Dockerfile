@@ -6,6 +6,16 @@ ARG TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+# Install composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+# Install NodeJS
+COPY --from=node:20-slim /usr/local/bin /usr/local/bin
+# Install NPM
+COPY --from=node:20-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
+# Install Yarn
+RUN npm install -g --force yarn pnpm@latest-10
+
+# Install extensions
 RUN apt-get update -y && apt-get install -y --no-install-recommends apt-utils \
   supervisor \
   cron \
@@ -21,20 +31,12 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends apt-utils \
 RUN install-php-extensions \
   pcntl \
   pdo_pgsql \
-  pgsql
+  pgsql \
+  bcmath \
+  intl
 #   && pecl install redis
 
 # RUN docker-php-ext-enable redis
-
-# Install composer
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-
-# Install NodeJS
-COPY --from=node:20-slim /usr/local/bin /usr/local/bin
-# Install NPM
-COPY --from=node:20-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
-# Install Yarn
-RUN npm install -g --force yarn pnpm@latest-10
 
 COPY . /app
 
