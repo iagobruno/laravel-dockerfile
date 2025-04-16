@@ -39,12 +39,10 @@ class ProcessJob implements ShouldQueue
 
         sleep(2);
 
-        // $result = Process::run("php artisan inspire");
-        // $emoji = $result->successful() ? '✅' : '❌';
-        // $output = $result->successful() ? $result->output() : 'Failed to process the command' ?? $result->errorOutput();
-        // $message = $emoji . ' ' . $output;
-
-        $message = '✅ ' . strip_tags(Inspiring::quote());
+        $result = Process::path(base_path())->run("php artisan inspire");
+        $emoji = $result->successful() ? '✅' : '❌';
+        $output = $result->successful() ? $result->output() : 'Failed to process the command' ?? $result->errorOutput();
+        $message = $emoji . ' ' . $output;
 
         $log->update(compact('message'));
     }

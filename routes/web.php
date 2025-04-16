@@ -12,5 +12,5 @@ Route::get('/test', function () {
 });
 
 Route::get('/inspire', function () {
-    return Process::run("php artisan inspire")->output();
+    return Process::path(base_path())->run("php artisan inspire")->output();
 });
