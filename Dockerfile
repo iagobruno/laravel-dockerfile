@@ -44,6 +44,7 @@ RUN if [ "$ENV" = "production" ]; then \
     composer install --optimize-autoloader --no-progress --no-interaction && \
     yarn install --non-interactive --no-progress && \
     yarn run build && \
+    php artisan optimize && \
     php artisan migrate --force \
   ;fi
 
