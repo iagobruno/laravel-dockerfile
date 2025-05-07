@@ -57,3 +57,4 @@ make ENV=production start
 > Don't forget to configure the .env file in the root outside the container.
 
 > You can customize the PORT with an environment variable too.
+
