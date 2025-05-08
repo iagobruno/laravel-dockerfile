@@ -28,6 +28,7 @@ start:
 		--network laravel-dockerfile_laravel \
 		--name $(CONTAINER_NAME) \
 		$(IMAGE_NAME)
+	docker image prune -f || true
 # Configurar para usar mais recursos da VPS conforme necessário e disponibilidade
 # --memory="4g" \
 # --cpus="1" \
