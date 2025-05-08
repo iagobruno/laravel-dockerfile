@@ -32,6 +32,5 @@ start:
 # --memory="4g" \
 # --cpus="1" \
 
-db-migrate:
-	pwd && \
+migrate:
 	php artisan migrate --force

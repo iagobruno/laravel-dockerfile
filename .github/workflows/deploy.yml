@@ -20,10 +20,10 @@ jobs:
         username: ${{ secrets.VPS_USER }}
         password: ${{ secrets.VPS_PASSWORD }}
         port: ${{ secrets.VPS_PORT }}
+        script_stop: true
         script: |
-          set -e
           cd laravel-dockerfile
           git pull origin main
           make ENV=production PORT=8080 build
-          make db-migrate
+          make migrate
           make ENV=production PORT=8080 start
