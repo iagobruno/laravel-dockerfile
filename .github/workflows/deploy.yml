@@ -25,5 +25,5 @@ jobs:
           cd laravel-dockerfile
           git pull origin main
           make ENV=production PORT=8080 build
-          php artisan migrate --force
+          make db-migrate
           make ENV=production PORT=8080 start
