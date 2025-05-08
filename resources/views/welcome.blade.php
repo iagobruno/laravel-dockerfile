@@ -18,7 +18,7 @@
 
     <h1>Logs:</h1>
     <ol reversed>
-        @foreach (\App\Models\Log::latest()->limit(1000)->get() as $log)
+        @foreach (\App\Models\Log::latest()->limit(500)->get() as $log)
             <x-log :$log />
         @endforeach
     </ol>
