@@ -20,8 +20,9 @@ jobs:
         port: ${{ secrets.VPS_PORT }}
         script: |
           set -e
+          export PATH=$PATH:/usr/bin
           cd laravel-dockerfile
           git pull origin main
           make ENV=production PORT=8080 build
-          /usr/bin/php artisan migrate --force
+          php artisan migrate --force
           make ENV=production PORT=8080 start
