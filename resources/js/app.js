@@ -32,4 +32,5 @@ function calcEstimatedTimeToNextUpdate() {
   document.getElementById('estimate').innerText = `Próxima atualização em ${estimatedTime} segundos...`;
 }
 
+calcEstimatedTimeToNextUpdate();
 setInterval(calcEstimatedTimeToNextUpdate, 1000);
