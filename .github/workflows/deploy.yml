@@ -20,9 +20,9 @@ jobs:
         port: ${{ secrets.VPS_PORT }}
         script: |
           set -e
-          export PATH=$PATH:/usr/bin
+          export PATH=$PATH:/root/.config/herd-lite/bin
           cd laravel-dockerfile
           git pull origin main
           make ENV=production PORT=8080 build
-          /root/.config/herd-lite/bin/php artisan migrate --force
+          php artisan migrate --force
           make ENV=production PORT=8080 start
