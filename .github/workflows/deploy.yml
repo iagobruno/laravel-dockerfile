@@ -21,6 +21,7 @@ jobs:
         password: ${{ secrets.VPS_PASSWORD }}
         port: ${{ secrets.VPS_PORT }}
         script: |
+          set -e
           cd laravel-dockerfile
           git pull origin main
           make ENV=production PORT=8080 build
