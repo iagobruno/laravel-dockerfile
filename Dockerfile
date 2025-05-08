@@ -42,11 +42,6 @@ RUN install-php-extensions \
 COPY . /app
 
 RUN if [ "$APP_ENV" = "production" ]; then \
-    composer install --optimize-autoloader --no-progress --no-interaction && \
-    pnpm install --force && \
-    pnpm run build && \
-    # sed -i 's/^DB_HOST=.*/DB_HOST=pgsql/' .env && \
-    php artisan optimize && \
     php artisan migrate --force \
   ;fi
 

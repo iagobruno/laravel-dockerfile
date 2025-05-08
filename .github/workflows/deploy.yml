@@ -23,5 +23,10 @@ jobs:
           export PATH=$PATH:/root/.config/herd-lite/bin
           cd laravel-dockerfile
           git pull origin main
+
+          composer install --optimize-autoloader --no-progress --no-interaction
+          pnpm install --force
+          pnpm run build
+
           docker compose up -d --build
           docker image prune -f || true
