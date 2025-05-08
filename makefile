@@ -34,5 +34,5 @@ start:
 # --cpus="1" \
 
 migrate:
-	/bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.4)"
+	/bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.4)" && \
 	php artisan migrate --force
