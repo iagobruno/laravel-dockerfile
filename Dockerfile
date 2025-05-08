@@ -45,7 +45,7 @@ RUN if [ "$ENV" = "production" ]; then \
     composer install --optimize-autoloader --no-progress --no-interaction && \
     pnpm install && \
     pnpm run build && \
-    sed -i 's/^DB_HOST=.*/DB_HOST=pgsql/' .env && \
+    # sed -i 's/^DB_HOST=.*/DB_HOST=pgsql/' .env && \
     php artisan optimize \
   ;fi
 
