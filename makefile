@@ -33,4 +33,4 @@ start:
 # --cpus="1" \
 
 migrate:
-	php artisan migrate --force
+	ls -l
