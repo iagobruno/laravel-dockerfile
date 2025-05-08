@@ -33,4 +33,5 @@ start:
 # --cpus="1" \
 
 db-migrate:
+    pwd
 	php artisan migrate --force
