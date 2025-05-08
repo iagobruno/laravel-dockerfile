@@ -37,8 +37,8 @@ php artisan db:seed # Optional
 Open another terminal tab and run the command below to compile front-end assets:
 
 ```bash
-yarn install
-yarn run dev
+pnpm install
+pnpm run dev
 ```
 
 Now you can access the project at http://localhost in the browser.
@@ -57,4 +57,3 @@ make ENV=production start
 > Don't forget to configure the .env file in the root outside the container.
 
 > You can customize the PORT with an environment variable too.
-

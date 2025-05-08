@@ -5,7 +5,7 @@ PORT ?= 8080
 
 dev:
 	docker compose up --build -d && \
-	yarn run dev
+	pnpm run dev
 
 bash:
 	docker exec -it $(CONTAINER_NAME) bash
