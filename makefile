@@ -22,9 +22,10 @@ start:
 	docker run -d \
 		-e PORT=$(PORT) \
 		-e ENV=$(ENV) \
-        -p $(PORT):$(PORT) \
+		-p $(PORT):$(PORT) \
 		-p 80:$(PORT) \
 		-p 443:433 \
+		--network laravel-dockerfile_laravel \
 		--name $(CONTAINER_NAME) \
 		$(IMAGE_NAME)
 # Configurar para usar mais recursos da VPS conforme necessário e disponibilidade

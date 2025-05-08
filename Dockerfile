@@ -21,6 +21,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends apt-utils \
   cron \
   curl \
   git \
+  make \
   zlib1g-dev \
   libzip-dev \
   libpng-dev \
@@ -44,8 +45,8 @@ RUN if [ "$ENV" = "production" ]; then \
     composer install --optimize-autoloader --no-progress --no-interaction && \
     yarn install --non-interactive --no-progress && \
     yarn run build && \
-    php artisan optimize && \
-    php artisan migrate --force \
+    sed -i 's/^DB_HOST=.*/DB_HOST=pgsql/' .env && \
+    php artisan optimize \
   ;fi
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf

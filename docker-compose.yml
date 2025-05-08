@@ -34,6 +34,8 @@ services:
             - 'laravel-pgsql:/var/lib/postgresql/data'
         networks:
             - laravel
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
         healthcheck:
             test:
                 - CMD
