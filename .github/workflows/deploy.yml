@@ -23,6 +23,5 @@ jobs:
           export PATH=$PATH:/root/.config/herd-lite/bin
           cd laravel-dockerfile
           git pull origin main
-          make ENV=production PORT=8080 build
-          php artisan migrate --force
-          make ENV=production PORT=8080 start
+          docker compose up -d --build
+          docker image prune -f || true

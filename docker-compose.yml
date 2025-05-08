@@ -4,6 +4,9 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+            args:
+                APP_ENV: '${APP_ENV}'
+                APP_PORT: '${APP_PORT:-8080}'
         image: laravel-app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
@@ -11,8 +14,8 @@ services:
             - '80:8080'
             - '443:443'
         environment:
-            ENV: '${ENV}'
-            PORT: '${PORT:-8080}'
+            APP_ENV: '${APP_ENV}'
+            APP_PORT: '${APP_PORT:-8080}'
         volumes:
             - .:/app
         networks:

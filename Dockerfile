@@ -1,7 +1,7 @@
 FROM dunglas/frankenphp:php8.3-bookworm
 
-ARG PORT
-ARG ENV=local
+ARG APP_PORT
+ARG APP_ENV
 ARG TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -41,12 +41,13 @@ RUN install-php-extensions \
 
 COPY . /app
 
-RUN if [ "$ENV" = "production" ]; then \
+RUN if [ "$APP_ENV" = "production" ]; then \
     composer install --optimize-autoloader --no-progress --no-interaction && \
-    pnpm install && \
+    pnpm install --force && \
     pnpm run build && \
     # sed -i 's/^DB_HOST=.*/DB_HOST=pgsql/' .env && \
-    php artisan optimize \
+    php artisan optimize && \
+    php artisan migrate --force \
   ;fi
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf

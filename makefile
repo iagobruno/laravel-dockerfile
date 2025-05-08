@@ -32,7 +32,3 @@ start:
 # Configurar para usar mais recursos da VPS conforme necessário e disponibilidade
 # --memory="4g" \
 # --cpus="1" \
-
-migrate:
-	ls
-# php artisan migrate --force
