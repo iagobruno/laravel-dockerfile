@@ -33,4 +33,4 @@ start:
 # --cpus="1" \
 
 migrate:
-	ls -l
+	ls -l -a
