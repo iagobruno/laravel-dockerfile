@@ -4,7 +4,7 @@ ENV ?= local
 PORT ?= 8080
 
 dev:
-	docker compose -f docker-compose.yml -f docker-compose.development.yml up -d && \
+	docker compose -f docker-compose.yml -f docker-compose.development.yml up -d --build && \
 	pnpm run dev
 
 bash:
