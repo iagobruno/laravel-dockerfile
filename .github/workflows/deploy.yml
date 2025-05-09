@@ -28,5 +28,5 @@ jobs:
           pnpm install --force
           pnpm run build
 
-          docker compose up -d --build
+          docker compose up -d --build app
           docker image prune -f || true
