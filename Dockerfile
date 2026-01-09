@@ -13,7 +13,7 @@ COPY --from=node:20-slim /usr/local/bin /usr/local/bin
 # Install NPM
 COPY --from=node:20-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
 # Install Yarn
-RUN npm install -g --force yarn pnpm@latest-10
+RUN npm install -g --force yarn pnpm@latest-10 chokidar
 
 # Install extensions
 RUN apt-get update -y && apt-get install -y --no-install-recommends apt-utils \
@@ -45,8 +45,7 @@ RUN if [ "$APP_ENV" = "production" ]; then \
     composer install --optimize-autoloader --no-progress --no-interaction && \
     pnpm install --force && \
     pnpm run build && \
-    php artisan optimize && \
-    php artisan migrate --force \
+    php artisan optimize \
   ;fi
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf

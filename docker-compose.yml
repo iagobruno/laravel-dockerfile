@@ -1,65 +1,76 @@
 services:
-    app:
-        container_name: laravel-app
+    server:
         build:
             context: .
             dockerfile: Dockerfile
             args:
-                APP_ENV: '${APP_ENV}'
-                APP_PORT: '${APP_PORT:-8080}'
+                APP_ENV: "${APP_ENV}"
+                APP_PORT: "${APP_PORT:-8080}"
         image: laravel-app
         extra_hosts:
-            - 'host.docker.internal:host-gateway'
-        ports:
-            - '80:8080'
-            - '443:443'
+            - "host.docker.internal:host-gateway"
+        labels:
+            docker-rollout.pre-stop-hook: "touch /tmp/drain && sleep 10"
         environment:
-            APP_ENV: '${APP_ENV}'
-            APP_PORT: '${APP_PORT:-8080}'
+            APP_ENV: "${APP_ENV}"
+            APP_PORT: "${APP_PORT:-8080}"
+            VIRTUAL_HOST: localhost
+            VIRTUAL_PORT: "${APP_PORT:-8080}"
         networks:
             - laravel
         depends_on:
             - pgsql
+            - redis
+            - nginx-proxy
+        healthcheck:
+            test: test ! -f /tmp/drain
+            retries: 2
+            interval: 5s
+            timeout: 5s
 
     pgsql:
         container_name: postgres
-        image: 'postgres:15'
+        image: "postgres:15"
         ports:
-            - '${FORWARD_DB_PORT:-5432}:5432'
+            - "${FORWARD_DB_PORT:-5432}:5432"
         environment:
-            PGPASSWORD: '${DB_PASSWORD:-secret}'
-            POSTGRES_DB: '${DB_DATABASE}'
-            POSTGRES_USER: '${DB_USERNAME}'
-            POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+            PGPASSWORD: "${DB_PASSWORD:-secret}"
+            POSTGRES_DB: "${DB_DATABASE}"
+            POSTGRES_USER: "${DB_USERNAME}"
+            POSTGRES_PASSWORD: "${DB_PASSWORD:-secret}"
         volumes:
-            - 'database:/var/lib/postgresql/data'
+            - "database:/var/lib/postgresql/data"
         networks:
             - laravel
         healthcheck:
-            test:
-                - CMD
-                - pg_isready
-                - '-q'
-                - '-d'
-                - '${DB_DATABASE}'
-                - '-U'
-                - '${DB_USERNAME}'
+            test: CMD pg_isready -q -d ${DB_DATABASE} -U ${DB_USERNAME}
             retries: 3
             timeout: 5s
 
     redis:
         container_name: redis
-        image: 'redis:alpine'
+        image: "redis:alpine"
         ports:
-            - '${FORWARD_REDIS_PORT:-6379}:6379'
+            - "${FORWARD_REDIS_PORT:-6379}:6379"
         volumes:
-            - 'cache:/data'
+            - "cache:/data"
         networks:
             - laravel
         healthcheck:
-            test: ["CMD", "redis-cli", "ping"]
+            test: CMD redis-cli ping
             retries: 3
             timeout: 5s
+
+    nginx-proxy:
+        image: nginxproxy/nginx-proxy
+        ports:
+            - "80:80"
+            - "8080:8080"
+            - "443:443"
+        networks:
+            - laravel
+        volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
 
 networks:
     laravel:

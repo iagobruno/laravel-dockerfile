@@ -21,18 +21,20 @@ php artisan key:generate
 Then start Docker containers using:
 
 ```bash
-docker compose up -d
+make dev
 ```
 
 And run the migrations:
 
 ```bash
-docker exec -it laravel-app bash
+make exec
 php artisan migrate
 php artisan db:seed # Optional
 ```
 
 ### Front-end assets
+
+The `make dev` command already starts Vite, but you can also start it manually.
 
 Open another terminal tab and run the command below to compile front-end assets:
 
@@ -45,15 +47,13 @@ Now you can access the project at http://localhost in the browser.
 
 ### How to deploy to production
 
-If you are using a VPS with Docker, run the commands below to update the production container:
+Run the [makefile](./makefile#L18) command below, which will execute the necessary commands to update the container without downtime:
 
 ```bash
 git pull origin main
-make ENV=production build
-php artisan migrate --force
-make ENV=production start
+make ENV=production deploy
 ```
 
-> Don't forget to configure the .env file in the root outside the container.
+> Don't forget to configure the .env file in the root **outside** the container with the correct variables.
 
 > You can customize the PORT with an environment variable too.
