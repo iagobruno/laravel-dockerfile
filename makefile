@@ -6,7 +6,7 @@ dev:
 	pnpm run dev
 
 exec:
-	docker exec -it $$(docker ps -q --filter "ancestor=laravel-app") \
+	docker exec -it $$(docker ps -q --filter "name=^laravel-dockerfile-server") \
 		$(if $(filter-out $@,$(MAKECMDGOALS)),$(filter-out $@,$(MAKECMDGOALS)),bash)
 
 build:
@@ -18,10 +18,19 @@ build:
 deploy:
 	make ENV=production build
 	docker compose run --rm -it server php artisan migrate --force
+# 	make exec php artisan queue:restart
 	# Deploy new version without downtime -> github.com/wowu/docker-rollout
 	docker rollout server
 	docker image prune -f || true
-	echo "DEPLOYED SUCCESSFULLY"
+	@echo "DEPLOYED SUCCESSFULLY"
 
 container-logs:
-	docker logs --follow $$(docker ps -q --filter "ancestor=laravel-app")
+	docker logs --follow $$(docker ps -q --filter "name=^laravel-dockerfile-server")
+
+push-image:
+	docker tag laravel-app iagobruno/laravel-dockerfile:latest
+	docker push iagobruno/laravel-dockerfile:latest
+	@echo "PUSHED SUCCESSFULLY"
+
+%:
+	@:

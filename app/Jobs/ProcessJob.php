@@ -37,7 +37,7 @@ class ProcessJob implements ShouldQueue
             'message' => '⏳ Processing...'
         ]);
 
-        sleep(2);
+        sleep(5);
 
         $result = Process::path(base_path())->run("php artisan inspire");
         $emoji = $result->successful() ? '✅' : '❌';
